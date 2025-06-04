@@ -1,33 +1,60 @@
-import hb9imsutils as ims
-import time
+import __init__ as ims
+import units as u
+import time, sys
 
 
-DELAY = "1m"
+DELAY = "7m3"
+
+u.VERBOSE = "-d" in sys.argv
 
 
 def _test_number_converter(string):
-	print(f"{string} -> {ims.unitprint(ims.number_converter(string))} ({ims.number_converter(string)})")
+	converted = u.number_converter(string)
+	print(f"{string} -> {u.unitprint(converted) if converted is not None else converted} ({converted})")
 
 
 @ims.timed
-def test(x, y, z):
+def test(x, y, z, w):
 	# number_converter test
-	delay = ims.number_converter(DELAY)
+	delay = u.number_converter(DELAY)
 	# unitprint tests
-	print(f"Delay in loop set to {delay} ({ims.unitprint(delay, 's')})")
+	print(f"Delay in loop set to {delay} ({u.unitprint(delay, 's')})")
+	print()
+	print("UNITPRINT TESTS")
 	print()
 	print(x)
-	print(ims.unitprint(x, "m"))
-	print(ims.unitprint(x, "m", power=1))
-	print(ims.unitprint(x, "m", power=2))
-	print(ims.unitprint(x, "m", power=3))
+	print(u.unitprint(x, "m"))
+	print(u.unitprint(x, "m", power=1))
+	print(u.unitprint(x, "m", power=2))
+	print(u.unitprint(x, "m", power=3))
+
+	print()
+	print("UNITPRINT2 TESTS")
+	print()
+	print(w)
+	print(u.unitprint2(w, "B"))  # normal test
+	print(u.unitprint2(w * 1024, "B"))  # one more test
+	print(u.unitprint2(w * 1024 ** 10, "B"))  # too many test
+	print()
+
 
 	# number_converter tests
-
+	print("+ NUMBER_CONVERTER TESTS")
 	_test_number_converter("5k6")
 	_test_number_converter("5.6k")
+	_test_number_converter("5ex6")
 	_test_number_converter("5.6ex")
+	_test_number_converter("56e8")
 	_test_number_converter("5.6e9")
+	_test_number_converter(".56e10")
+	print()
+	print("- NUMBER_CONVERTER TESTS")
+	_test_number_converter("5.6ex9")
+	_test_number_converter("5.6.e9")
+	_test_number_converter(".5.6e9")
+	_test_number_converter("5.6e")
+	_test_number_converter("5.6f9")
+	print()
 
 	# progres_bar tests
 
@@ -42,6 +69,7 @@ def test(x, y, z):
 		print(ims.progress_bar(i, z, time.time() - t_s), end="")
 		time.sleep(delay)
 	print(ims.progress_bar(y, z, time.time() - t_s))
+	print()
 
 	# ProgressBar tests
 
@@ -50,6 +78,7 @@ def test(x, y, z):
 
 	for i in ims.ProgressBar(range(y), z):
 		time.sleep(delay)
+	print()
 
 	pb = ims.ProgressBar(None, y)
 	for i in range(y):
@@ -62,8 +91,9 @@ def test(x, y, z):
 		time.sleep(delay)
 		pb()
 	print()
+	print()
 
 
-test(1e-18, 200, 100)
+test(1e-18, 200, 100, 3**42)
 
 time.sleep(5)
