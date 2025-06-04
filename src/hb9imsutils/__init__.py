@@ -1,6 +1,6 @@
 import os
 import time
-from hb9imsutils.units import unitprint, unitprint_block, number_converter
+from units import unitprint, unitprint_block, number_converter, unitprint2, unitprint2_block, VERBOSE
 
 
 NAN = float("nan")
@@ -23,6 +23,16 @@ def timed(f):
 
 
 def ask_option(question, options, /, ignore_case=True):
+    """
+    Asks the user for an input from the `outputs` list and returns the index
+    :param question: the question
+    :type question: str
+    :param options: the options the user will choose from
+    :type options: list[str]
+    :param ignore_case: wether the case is important to the choice
+    :returns: the index the user has chosen
+    :rtype: int
+    """
     if ignore_case:
         options = map(lambda i: i.lower(), options)
     while True:
@@ -35,8 +45,17 @@ def ask_option(question, options, /, ignore_case=True):
 
 
 def ask_float(question):
+    """
+    Asks the user for a float by printing the question and returning a valid float
+    Engineering prefixes are supported
+    :param question: the question in question
+    :type question: str
+    :returns: a float provided from the user
+    :rtype: float
+    """
     while (x := number_converter(input(question))) is None:
         print("Number not recognized, please try again ...")
+    return x
 
 
 def progress_bar(status, total, passed_time=None):
