@@ -1,6 +1,13 @@
 import os
 import time
-from hb9imsutils.units import unitprint, unitprint_block, number_converter, unitprint2, unitprint2_block, VERBOSE
+from hb9imsutils.units import (
+    unitprint,
+    unitprint_block,
+    number_converter,
+    unitprint2,
+    unitprint2_block,
+    VERBOSE
+    )
 
 
 NAN = float("nan")
