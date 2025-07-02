@@ -1,4 +1,4 @@
-import math as np
+import math
 import re
 
 
@@ -38,7 +38,7 @@ def unitprint_block(value, /, unit=None, power=None):
             VERBOSE and print("value negative, flipping sign")
             sign = "-"
             value *= -1
-        log1000 = np.log10(value) // (3 * (power if power is not None else 1))
+        log1000 = math.log10(value) // (3 * (power if power is not None else 1))
         value *= 1000 ** (-log1000 * (power if power is not None else 1))
         if VERBOSE:
             print(f"log1000 = {log1000}")
@@ -55,8 +55,8 @@ def unitprint_block(value, /, unit=None, power=None):
 
     VERBOSE and print(f"prefix = {prefix}")
 
-    return (f"{sign}{f'{value:.3f}'.rjust(4 + 3 * power)} {prefix or ' '}{unit}" 
-            f"{(f'^{power}' if power is not None else '')}")
+    return (f"{sign}{f'{value:.3f}'.rjust(4 + 3 * (power if power is not None else 1))} " 
+            f"{prefix or ' '}{unit}{(f'^{power}' if power is not None else '')}")
 
 
 def unitprint(value, /, unit=None, power=None):
@@ -80,7 +80,7 @@ def unitprint(value, /, unit=None, power=None):
             VERBOSE and print("value negative, flipping sign")
             sign = "-"
             value *= -1
-        log1000 = np.log10(value) // (3 * (power if power is not None else 1))
+        log1000 = math.log10(value) // (3 * (power if power is not None else 1))
         value *= 1000 ** (-log1000 * (power if power is not None else 1))
         if VERBOSE:
             print(f"log1000 = {log1000}")
@@ -127,7 +127,7 @@ def unitprint2(value, /, unit=None):
                 "Negative base2 units are not supported "
                 "(it doesn't make sense to have negative bytes)"
                 )
-        log1024 = max(np.log2(value), 0) // 10
+        log1024 = max(math.log2(value), 0) // 10
         value *= 1024 ** (-log1024)
         if VERBOSE:
             print(f"log1024 = {log1024}")
@@ -150,7 +150,7 @@ def unitprint2(value, /, unit=None):
     VERBOSE and print(f"prefix = {prefix}")
 
     if prefix == "":
-        return f"{np.ceil(value):0.0f} {unit}"
+        return f"{math.ceil(value):0.0f} {unit}"
 
     return f"{value:.3f} {prefix}{unit}"
 
@@ -181,7 +181,7 @@ def unitprint2_block(value, /, unit=None):
                 "Negative base2 units are not supported "
                 "(it doesn't make sense to have negative or half bytes)"
                 )
-        log1024 = max(np.log2(value), 0) // 10
+        log1024 = max(math.log2(value), 0) // 10
         value *= 1024 ** (-log1024)
         if VERBOSE:
             print(f"log1024 = {log1024}")

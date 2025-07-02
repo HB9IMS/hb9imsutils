@@ -1,11 +1,23 @@
-import __init__ as ims
-import units as u
-import time, sys
+import time, sys, os
 
+try:
+	from . import __init__ as ims
+	from . import units as u
+except ImportError:
+	sys.path.insert(1, '../')
+	import hb9imsutils as ims
+	import hb9imsutils.units as u
 
 DELAY = "7m3"
 
 u.VERBOSE = "-d" in sys.argv
+
+
+@ims.PTimer
+def high_accuracy_sleep(duration):
+	end = duration + time.perf_counter()
+	while time.perf_counter() < end:
+		pass
 
 
 def _test_number_converter(string):
@@ -14,7 +26,7 @@ def _test_number_converter(string):
 
 
 @ims.timed
-def test(x, y, z, w):
+def test(x, y, z, w, v, u):
 	# number_converter test
 	delay = u.number_converter(DELAY)
 	# unitprint tests
@@ -93,7 +105,20 @@ def test(x, y, z, w):
 	print()
 	print()
 
+	# PTimer Test
+	for _ in range(v):
+		high_accuracy_sleep(u)
+	print(high_accuracy_sleep.summary_long())
+	timed_sleep = ims.PTimer(time.sleep, print_rate=100, length="long")
+	for _ in range(v):
+		timed_sleep(u)
+	print(timed_sleep.summary_long())
 
-test(1e-18, 200, 100, 3**42)
 
-time.sleep(5)
+def main():
+	test(1e-18, 200, 100, 3**42, 1000, 0.001)
+	time.sleep(5)
+
+
+if __name__ == '__main__':
+	main()
