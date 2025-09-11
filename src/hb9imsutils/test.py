@@ -1,16 +1,24 @@
 import time, sys, os
 
-try:
-	from . import __init__ as ims
-	from . import units as u
+try:  # for dev testing
+	from .. import hb9imsutils as ims
+	from ...hb9imsutils import units
 except ImportError:
-	sys.path.insert(1, '../')
-	import hb9imsutils as ims
-	import hb9imsutils.units as u
+	try:
+		import hb9imsutils as ims
+		import hb9imsutils.units as units
+	except ImportError:
+		raise ImportError(
+			f"hb9imsutils could not be found. Have you downloaded the lib?\n"
+			f"path is set as {sys.path}\n"
+			f"BTW if you got here if you cloned the repo or installed via pypi:\n"
+			f" PLEASE make an issue and give me more info (like the path)\n"
+			f"and/or write me a mail with 'hb9imsutils' in the subject line.\n"
+		)
 
 DELAY = "7m3"
 
-u.VERBOSE = "-d" in sys.argv
+units.VERBOSE = "-d" in sys.argv
 
 
 @ims.PTimer
@@ -21,32 +29,46 @@ def high_accuracy_sleep(duration):
 
 
 def _test_number_converter(string):
-	converted = u.number_converter(string)
-	print(f"{string} -> {u.unitprint(converted) if converted is not None else converted} ({converted})")
+	converted = units.number_converter(string)
+	print(f"{string} -> {units.unitprint(converted) if converted is not None else converted} ({converted})")
 
 
 @ims.timed
-def test(x, y, z, w, v, u):
+def test(untiprint_test_number, unitprint2_test_number,
+	     prog_bar_correct_range, prog_bar_incorrect_range,
+	     ptimer_num_runs, ptimer_sleep_duration):
 	# number_converter test
-	delay = u.number_converter(DELAY)
+	delay = units.number_converter(DELAY)
 	# unitprint tests
-	print(f"Delay in loop set to {delay} ({u.unitprint(delay, 's')})")
+	print(f"Delay in loop set to {delay} ({units.unitprint(delay, 's')})")
 	print()
 	print("UNITPRINT TESTS")
 	print()
-	print(x)
-	print(u.unitprint(x, "m"))
-	print(u.unitprint(x, "m", power=1))
-	print(u.unitprint(x, "m", power=2))
-	print(u.unitprint(x, "m", power=3))
-
+	print(untiprint_test_number)
+	print(units.unitprint(untiprint_test_number, "m"))
+	print(units.unitprint(untiprint_test_number, "m", power=1))
+	print(units.unitprint(untiprint_test_number, "m", power=2))
+	print(units.unitprint(untiprint_test_number, "m", power=3))
+	print()
+	print("BLOCK TESTS")
+	print()
+	print(units.unitprint_block(untiprint_test_number, "m"))
+	print(units.unitprint_block(untiprint_test_number, "m", power=1))
+	print(units.unitprint_block(untiprint_test_number, "m", power=2))
+	print(units.unitprint_block(untiprint_test_number, "m", power=3))
 	print()
 	print("UNITPRINT2 TESTS")
 	print()
-	print(w)
-	print(u.unitprint2(w, "B"))  # normal test
-	print(u.unitprint2(w * 1024, "B"))  # one more test
-	print(u.unitprint2(w * 1024 ** 10, "B"))  # too many test
+	print(unitprint2_test_number)
+	print(units.unitprint2(unitprint2_test_number, "B"))  # normal test
+	print(units.unitprint2(unitprint2_test_number * 1024, "B"))  # one more test
+	print(units.unitprint2(unitprint2_test_number * 1024 ** 10, "B"))  # too many test
+	print()
+	print("BLOCK TESTS")
+	print()
+	print(units.unitprint2_block(unitprint2_test_number, "B"))  # normal test
+	print(units.unitprint2_block(unitprint2_test_number * 1024, "B"))  # one more test
+	print(units.unitprint2_block(unitprint2_test_number * 1024 ** 10, "B"))  # too many test
 	print()
 
 
@@ -71,52 +93,52 @@ def test(x, y, z, w, v, u):
 	# progres_bar tests
 
 	t_s = time.time()
-	for i in range(y):
-		print(ims.progress_bar(i, y, time.time() - t_s), end="")
+	for i in range(prog_bar_correct_range):
+		print(ims.progress_bar(i, prog_bar_correct_range, time.time() - t_s), end="")
 		time.sleep(delay)
-	print(ims.progress_bar(y, y, time.time() - t_s))
+	print(ims.progress_bar(prog_bar_correct_range, prog_bar_correct_range, time.time() - t_s))
 
 	t_s = time.time()
-	for i in range(y):
-		print(ims.progress_bar(i, z, time.time() - t_s), end="")
+	for i in range(prog_bar_correct_range):
+		print(ims.progress_bar(i, prog_bar_incorrect_range, time.time() - t_s), end="")
 		time.sleep(delay)
-	print(ims.progress_bar(y, z, time.time() - t_s))
+	print(ims.progress_bar(prog_bar_correct_range, prog_bar_incorrect_range, time.time() - t_s))
 	print()
 
 	# ProgressBar tests
 
-	for i in ims.ProgressBar(range(y), y):
+	for i in ims.ProgressBar(range(prog_bar_correct_range), prog_bar_correct_range):
 		time.sleep(delay)
 
-	for i in ims.ProgressBar(range(y), z):
+	for i in ims.ProgressBar(range(prog_bar_correct_range), prog_bar_incorrect_range):
 		time.sleep(delay)
 	print()
 
-	pb = ims.ProgressBar(None, y)
-	for i in range(y):
+	pb = ims.ProgressBar(None, prog_bar_correct_range)
+	for i in range(prog_bar_correct_range):
 		time.sleep(delay)
 		pb()
 	print()
 
-	pb = ims.ProgressBar(None, z)
-	for i in range(y):
+	pb = ims.ProgressBar(None, prog_bar_incorrect_range)
+	for i in range(prog_bar_correct_range):
 		time.sleep(delay)
 		pb()
 	print()
 	print()
 
 	# PTimer Test
-	for _ in range(v):
-		high_accuracy_sleep(u)
+	for _ in range(ptimer_num_runs):
+		high_accuracy_sleep(ptimer_sleep_duration)
 	print(high_accuracy_sleep.summary_long())
 	timed_sleep = ims.PTimer(time.sleep, print_rate=100, length="long")
-	for _ in range(v):
-		timed_sleep(u)
+	for _ in range(ptimer_num_runs):
+		timed_sleep(ptimer_sleep_duration)
 	print(timed_sleep.summary_long())
 
 
 def main():
-	test(1e-18, 200, 100, 3**42, 1000, 0.001)
+	test(1e-18, 3**42, 200, 100, 1000, 0.001)
 	time.sleep(5)
 
 
