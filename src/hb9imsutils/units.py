@@ -203,7 +203,7 @@ def unitprint2_block(value, /, unit=None):
     VERBOSE and print(f"prefix = {prefix}")
 
     if prefix == "":
-        return f"{np.ceil(value):0.0f}   {unit or ' '}"
+        return f"{math.ceil(value):0.0f}   {unit or ' '}"
 
     return f"{value:7.3f} {prefix}{unit or ' '}"
 
