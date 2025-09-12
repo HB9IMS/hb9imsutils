@@ -1,8 +1,13 @@
 import time, sys, os
 
+import __init__ as ims
+import units
+
+
 try:  # for dev testing
-	from .. import hb9imsutils as ims
-	from ...hb9imsutils import units
+	
+	
+	print("LOCAL IMPORT")
 except ImportError:
 	try:
 		import hb9imsutils as ims
@@ -90,13 +95,39 @@ def test(untiprint_test_number, unitprint2_test_number,
 	_test_number_converter("5.6f9")
 	print()
 
+	print()
+	print("PROGRESSBAR TESTS")
+	print()
+
 	# progres_bar tests
+	progress_bar_long_str =  "long (estim. too low)"
+	progress_bar_short_str =  "short (estim. too high)"
+	progress_bar_correct_str =  "correct (estim. == max)"
+	print()
+	print("progress_bar (function)")
+	print()
+	print(progress_bar_short_str)
+	print()
+
+	t_s = time.time()
+	for i in range(prog_bar_incorrect_range):
+		print(ims.progress_bar(i, prog_bar_correct_range, time.time() - t_s), end="")
+		time.sleep(delay)
+	print(ims.progress_bar(prog_bar_incorrect_range, prog_bar_correct_range, time.time() - t_s))
+
+	print()
+	print(progress_bar_correct_str)
+	print()
 
 	t_s = time.time()
 	for i in range(prog_bar_correct_range):
 		print(ims.progress_bar(i, prog_bar_correct_range, time.time() - t_s), end="")
 		time.sleep(delay)
 	print(ims.progress_bar(prog_bar_correct_range, prog_bar_correct_range, time.time() - t_s))
+
+	print()
+	print(progress_bar_long_str)
+	print()
 
 	t_s = time.time()
 	for i in range(prog_bar_correct_range):
@@ -106,18 +137,50 @@ def test(untiprint_test_number, unitprint2_test_number,
 	print()
 
 	# ProgressBar tests
+	print()
+	print("ProgressBar, as iterator")
+	print()
+	print(progress_bar_short_str)
+	print()
+
+	for i in ims.ProgressBar(range(prog_bar_incorrect_range), prog_bar_correct_range):
+		time.sleep(delay)
+
+	print()
+	print(progress_bar_correct_str)
+	print()
 
 	for i in ims.ProgressBar(range(prog_bar_correct_range), prog_bar_correct_range):
 		time.sleep(delay)
 
+	print()
+	print(progress_bar_long_str)
+	print()
+
 	for i in ims.ProgressBar(range(prog_bar_correct_range), prog_bar_incorrect_range):
 		time.sleep(delay)
+
+	print()
+	print()
+	print("ProgressBar, as seperate object")
+	print()
+	print(progress_bar_short_str)
+	print()
+
+	pb = ims.ProgressBar(None, prog_bar_correct_range)
+	for i in range(prog_bar_incorrect_range):
+		time.sleep(delay)
+		pb()
+	print()
+	print(progress_bar_correct_str)
 	print()
 
 	pb = ims.ProgressBar(None, prog_bar_correct_range)
 	for i in range(prog_bar_correct_range):
 		time.sleep(delay)
 		pb()
+	print()
+	print(progress_bar_long_str)
 	print()
 
 	pb = ims.ProgressBar(None, prog_bar_incorrect_range)
