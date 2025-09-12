@@ -1,12 +1,8 @@
 import time, sys, os
 
-import __init__ as ims
-import units
-
-
 try:  # for dev testing
-	
-	
+	import __init__ as ims
+	import units
 	print("LOCAL IMPORT")
 except ImportError:
 	try:
