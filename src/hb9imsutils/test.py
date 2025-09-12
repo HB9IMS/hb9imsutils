@@ -191,9 +191,17 @@ def test(untiprint_test_number, unitprint2_test_number,
 	print()
 
 	# PTimer Test
+	print()
+	print("high_accuracy_sleep timing testing")
+	print()
 	for _ in range(ptimer_num_runs):
 		high_accuracy_sleep(ptimer_sleep_duration)
 	print(high_accuracy_sleep.summary_long())
+	print()
+	print(f"time.sleep timing testing"
+		  f"(we aim for {units.unitprint(ptimer_sleep_duration, 's')})(yeah it's that bad)"
+		  f"(at least in Py3.10.11)")
+	print()
 	timed_sleep = ims.PTimer(time.sleep, print_rate=100, length="long")
 	for _ in range(ptimer_num_runs):
 		timed_sleep(ptimer_sleep_duration)
@@ -201,7 +209,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 
 
 def main():
-	test(1e-18, 3**42, 200, 100, 1000, 0.001)
+	test(1e-18, 3**42, 20, 10, 1000, 0.001)
 	time.sleep(5)
 
 
