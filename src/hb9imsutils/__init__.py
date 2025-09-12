@@ -1,14 +1,29 @@
 import os
 import time
 import numpy as np
-from .units import (
-    unitprint,
-    unitprint_block,
-    number_converter,
-    unitprint2,
-    unitprint2_block,
-    VERBOSE
+try:
+    from .units import (
+        unitprint,
+        unitprint_block,
+        number_converter,
+        unitprint2,
+        unitprint2_block,
+        VERBOSE
     )
+except ImportError:
+    try:  # should only be used in dev
+        from units import(
+            unitprint,
+            unitprint_block,
+            number_converter,
+            unitprint2,
+            unitprint2_block,
+            VERBOSE
+        )
+        print("UNITS SUBMODULE IMPORTED WITHOUT PARRENT REFERENCE")
+        print("THIS SHOULD ONLY HAPPEN WHILE DEVELOPPING; NOT IN PRODUCTION")
+    except ImportError:
+        raise ImportError("units submodule not found; package broken")
 
 
 NAN = float("nan")
