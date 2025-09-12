@@ -81,15 +81,17 @@ def ask_float(question):
     return x
 
 
-def progress_bar(status, total, passed_time=None):
+def progress_bar(status, total, passed_time=None, force_warning=False):
     """
     Returns a nice progress bar
     :param status: the current position
     :param total: the maximum position
     :param passed_time: the time passed since the start
+    :param force_warning: if true forces '!' instead of '='
     :returns: the progress bar
     """
-    arrow_base = '=' * int(status / total * 50)
+    base_char = "!" if force_warning else "="
+    arrow_base = base_char * int(status / total * 50)
     spaces = ' ' * (50 - len(arrow_base) - 1)
 
     eta = ""
@@ -112,7 +114,7 @@ def progress_bar(status, total, passed_time=None):
     if status < total:
         return f'\r[{arrow_base}>{spaces}] {percentage} {eta} {elapsed}'
     elif status == total:
-        return f'\r[{"="*50}] {percentage} {eta} {elapsed}'
+        return f'\r[{base_char * 50}] {percentage} {eta} {elapsed}'
     else:
         return f"\r[{'!' * 50}] {percentage} ETA {str(NAN): ^12} {elapsed}"
 
@@ -122,18 +124,29 @@ class ProgressBar:
     Alive-like progress bar, but with time predictions
     """
 
-    def __init__(self, iterable, expected_iterations):
+    def __init__(self, iterable, expected_iterations, redraw_interval=0.033):
+        """
+        :param iterable: the iterable to wrap
+        :param expected_iterations: 
+        :param redraw_interval: minimum time between draws in s (default 30fps)
+        """
         self.start_time = time.time()
+        self.last_draw = 0
         self.iterable = iterable
         self.current_iteration = 0
         self.expected_iterations = expected_iterations
+        self.redraw_interval = redraw_interval
 
-    def _print_bar(self):
-        print(progress_bar(
-            self.current_iteration, 
-            self.expected_iterations, 
-            time.time() - self.start_time
-        ), flush=True, end="")
+    def _print_bar(self, end=False):
+        if (self.last_draw + self.redraw_interval < time.time()
+            or end or self.current_iteration == self.expected_iterations):
+            print(progress_bar(
+                self.current_iteration, 
+                self.expected_iterations, 
+                time.time() - self.start_time,
+                force_warning=(end and self.current_iteration != self.expected_iterations),
+            ), flush=True, end="")
+            self.last_draw = time.time()
 
     def __iter__(self):
         for obj in self.iterable:
@@ -141,7 +154,7 @@ class ProgressBar:
             yield obj
             self.current_iteration += 1
             self._print_bar()
-        self._print_bar()
+        self._print_bar(end=True)
         print()
 
     def __call__(self):
@@ -247,8 +260,8 @@ class PTimer:
     def summary_long(self, sep="\n"):
         stats = self.get_stats()
         return sep.join((
-            f"{self.func.__name__} took {unitprint_block(stats.avg * 1e-9, 's')}"
-            f" ± {stats.std_rel * 100:.3f}% ({unitprint_block(stats.std_abs * 1e-9, 's')}) ",
+            f"{self.func.__name__} took {unitprint(stats.avg * 1e-9, 's')}"
+            f" ± {stats.std_rel * 100:.3f}% ({unitprint(stats.std_abs * 1e-9, 's')}) ",
             f"25% Hi: {unitprint_block(stats.q3 * 1e-9, 's')}",
             f"25% Lo: {unitprint_block(stats.q1 * 1e-9, 's')}",
             f"10% Lo: {unitprint_block(stats.d1 * 1e-9, 's')}",
