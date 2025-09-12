@@ -26,7 +26,7 @@ DELAY = "7m3"
 units.VERBOSE = "-d" in sys.argv
 
 
-@ims.PTimer
+@ims.PTimer(redraw_interval=0.033)
 def high_accuracy_sleep(duration):
 	end = duration + time.perf_counter()
 	while time.perf_counter() < end:

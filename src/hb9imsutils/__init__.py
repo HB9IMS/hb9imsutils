@@ -167,13 +167,25 @@ class PTimer:
     """
     Wrapper for timing a function over all calls. 
     """
-    def __init__(self, func=None, *, print_rate=0, length="short"):
+    def __init__(self, func=None, *, print_rate=None, redraw_interval=None, length="short"):
+        if print_rate is not None and redraw_interval is not None:
+            raise ValueError("Must set either print rate or redraw interval")
+        if print_rate is None:
+            print_rate = 0
+        if redraw_interval is None:
+            redraw_interval = 0
+
         if length not in ["short", "long"]:
             raise ValueError("length must be either short or long")
         self.length = length
+
         self.print_rate = print_rate
         self.counter = 0
         self.counter_total = 0
+
+        self.redraw_interval = redraw_interval
+        self.last_draw = 0
+
         self.func = func
         self.times = []
 
@@ -188,31 +200,42 @@ class PTimer:
             self.func = args[0]
             return self
         else:
+            # get a rough estimate on how long getting the time takes
+            time_bench1 = time.perf_counter_ns()
+            time_bench2 = time.perf_counter_ns()
             start = time.perf_counter_ns()
             res = self.func(*args, **kwargs)
             end = time.perf_counter_ns()
-            self.log_time(end-start)
+            self.log_time((end - start) - (time_bench2 - time_bench1))
             return res
 
-    def log_time(self, time):
+    def log_time(self, exec_time):
         """
         log a run
-        :param time: execution time in ns
+        :param exec_time: execution time in ns
         """
-        self.times.append(time)
+        self.times.append(exec_time)
         self.counter += 1
         self.counter_total += 1
-        if not self.print_rate:
-            return
-        if self.counter >= self.print_rate:
-            self.counter = 0
-            if self.length == "short":
-                print(self.summary_short())
-            elif self.length == "long":
-                print(self.summary_long())
-            else:
-                raise ValueError(f"invalid length: {repr(self.length)} "
-                                 f"not in ('short', 'long')")
+        if self.counter_total <= 1:
+            return  # printing stats is impossible
+        if self.print_rate:
+            if self.counter >= self.print_rate:
+                self._print()
+        if self.redraw_interval:
+            if self.last_draw + self.print_rate > time.time():
+                self._print()
+
+    def _print(self):
+         self.counter = 0
+         self.last_draw = time.time()
+         if self.length == "short":
+             print(self.summary_short())
+         elif self.length == "long":
+             print(self.summary_long())
+         else:
+             raise ValueError(f"invalid length: {repr(self.length)} "
+                              f"not in ('short', 'long')")
 
     def get_stats(self):
         """
@@ -227,8 +250,8 @@ class PTimer:
         - std_abs: the absolute standard deviation
         - std_rel: the relative standard deviation (in factor, NOT %)
         """
-        if not self.times:
-            raise ValueError("no times were recorded")
+        if not len(self.times) - 1:
+            raise ValueError("not enough times were recorded")
         
         data = np.array(self.times)
         
@@ -239,7 +262,7 @@ class PTimer:
         d1 = np.percentile(data, 90)
         c1 = np.percentile(data, 99)
         std_abs = np.std(data, ddof=1)
-        std_rel = (std_abs / avg) if avg != 0 else INF
+        std_rel = (std_abs / avg) if avg != 0 else (NAN if std_abs == 0 else INF)
 
         return Namespace(**{
             "avg": avg,
