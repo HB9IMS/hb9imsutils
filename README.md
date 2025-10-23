@@ -44,7 +44,7 @@ add the `_block` suffix.
 
 `unitprint2` is base 2, so it formats $2^{18}$ bytes `256.000 KiB` instead of `262.144 kB`.
 
-The base 10 version of `unitprint`, you can specify a power, so $10^-6 m^2$ can be printed as `1.000 mm^2`.
+The base 10 version of `unitprint`, you can specify a power, so $10^{-6}m^2$ can be printed as `1.000 mm^2`.
 For that, use the optional power parameter.
 (Please specify the `power=n` parameter directly. It makes it WAY more readable)
 
