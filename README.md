@@ -35,7 +35,7 @@ for i in something_you_know_pretty_well_how_long_it_should_take:
 ### Unitprint
 Ok, I'll admit. `unitprint` is the main feature of my library but wasn't even my idea.
 Props to this go to the IT admin where I interned and implemented his idea.
-I improved the concept a little (like f.ex. using a dict with the $log_1000$ / $log_1024$ values
+I improved the concept a little (like f.ex. using a dict with the $log_{1000}$ / $log_{1024}$ values
 instead of elif matching them to fixed values).
 
 Originally, the only `unitprint` function was fixed size; if you still want it padded correctly,
