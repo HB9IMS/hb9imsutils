@@ -22,11 +22,12 @@ DELAY = "7m3"
 units.VERBOSE = "-d" in sys.argv
 
 
-@ims.PTimer(redraw_interval=0.033)
-def high_accuracy_sleep(duration):
-	end = duration + time.perf_counter()
-	while time.perf_counter() < end:
-		pass
+class PrecTimer:
+	@ims.PTimer(redraw_interval=0.033)
+	def high_accuracy_sleep(self, duration):
+		end = duration + time.perf_counter()
+		while time.perf_counter() < end:
+			pass
 
 
 def _test_number_converter(string):
@@ -190,9 +191,10 @@ def test(untiprint_test_number, unitprint2_test_number,
 	print()
 	print("high_accuracy_sleep timing testing")
 	print()
+	timer = PrecTimer()
 	for _ in range(ptimer_num_runs):
-		high_accuracy_sleep(ptimer_sleep_duration)
-	print(high_accuracy_sleep.summary_long())
+		timer.high_accuracy_sleep(ptimer_sleep_duration)
+	print(timer.high_accuracy_sleep.summary_long())
 	print()
 	print(f"time.sleep timing testing")
 	print(f"(we aim for {units.unitprint(ptimer_sleep_duration, 's')})(yeah it's that bad)")

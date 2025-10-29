@@ -1,6 +1,10 @@
 import os
+import sys
 import time
 import numpy as np
+
+from types import MethodType
+
 try:
     from .units import (
         unitprint,
@@ -291,6 +295,9 @@ class PTimer:
             f" 1% Lo: {unitprint_block(stats.c1 * 1e-9, 's')}",
             f"measured over {self.counter_total: 3} calls"
         ))
+
+    def __get__(self, obj, objtype=None):
+        return self if obj is None else MethodType(self, obj)
 
 
 class Namespace(object):

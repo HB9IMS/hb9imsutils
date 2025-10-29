@@ -65,8 +65,6 @@ I thought it was cool and wanted to use it in scripts, not just the console.
 It is an extension of the `@timed` decorator
 (but I upgraded it to a class because some implementation was easier). 
 
-Open issue: inoperable in classes, use `@timed`
-
 FUN FACT: If you want a short summary (or long idc) every n samples xor every t seconds, 
 you can call the decorator with parameters `print_rate=n` xor `redraw_interval=t`
 
