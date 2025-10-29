@@ -227,7 +227,7 @@ class PTimer:
             if self.counter >= self.print_rate:
                 self._print()
         if self.redraw_interval:
-            if self.last_draw + self.print_rate > time.time():
+            if self.last_draw + self.redraw_interval < time.time():
                 self._print()
 
     def _print(self):

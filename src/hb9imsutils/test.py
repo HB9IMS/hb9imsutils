@@ -23,11 +23,15 @@ units.VERBOSE = "-d" in sys.argv
 
 
 class PrecTimer:
-	@ims.PTimer(redraw_interval=0.033)
+	@ims.PTimer(redraw_interval=0.33)
 	def high_accuracy_sleep(self, duration):
 		end = duration + time.perf_counter()
 		while time.perf_counter() < end:
 			pass
+
+	@ims.PTimer
+	def do_nothing(self):
+		pass
 
 
 def _test_number_converter(string):
@@ -92,6 +96,8 @@ def test(untiprint_test_number, unitprint2_test_number,
 	_test_number_converter("5.6f9")
 	print()
 
+	timer = PrecTimer()
+
 	print()
 	print("PROGRESSBAR TESTS")
 	print()
@@ -110,6 +116,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 	for i in range(prog_bar_incorrect_range):
 		print(ims.progress_bar(i, prog_bar_correct_range, time.time() - t_s), end="")
 		time.sleep(delay)
+		timer.do_nothing()
 	print(ims.progress_bar(prog_bar_incorrect_range, prog_bar_correct_range, time.time() - t_s))
 
 	print()
@@ -120,6 +127,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 	for i in range(prog_bar_correct_range):
 		print(ims.progress_bar(i, prog_bar_correct_range, time.time() - t_s), end="")
 		time.sleep(delay)
+		timer.do_nothing()
 	print(ims.progress_bar(prog_bar_correct_range, prog_bar_correct_range, time.time() - t_s))
 
 	print()
@@ -130,6 +138,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 	for i in range(prog_bar_correct_range):
 		print(ims.progress_bar(i, prog_bar_incorrect_range, time.time() - t_s), end="")
 		time.sleep(delay)
+		timer.do_nothing()
 	print(ims.progress_bar(prog_bar_correct_range, prog_bar_incorrect_range, time.time() - t_s))
 	print()
 
@@ -142,6 +151,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 
 	for i in ims.ProgressBar(range(prog_bar_incorrect_range), prog_bar_correct_range):
 		time.sleep(delay)
+		timer.do_nothing()
 
 	print()
 	print(progress_bar_correct_str)
@@ -149,6 +159,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 
 	for i in ims.ProgressBar(range(prog_bar_correct_range), prog_bar_correct_range):
 		time.sleep(delay)
+		timer.do_nothing()
 
 	print()
 	print(progress_bar_long_str)
@@ -156,6 +167,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 
 	for i in ims.ProgressBar(range(prog_bar_correct_range), prog_bar_incorrect_range):
 		time.sleep(delay)
+		timer.do_nothing()
 
 	print()
 	print()
@@ -167,6 +179,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 	pb = ims.ProgressBar(None, prog_bar_correct_range)
 	for i in range(prog_bar_incorrect_range):
 		time.sleep(delay)
+		timer.do_nothing()
 		pb()
 	print()
 	print(progress_bar_correct_str)
@@ -175,6 +188,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 	pb = ims.ProgressBar(None, prog_bar_correct_range)
 	for i in range(prog_bar_correct_range):
 		time.sleep(delay)
+		timer.do_nothing()
 		pb()
 	print()
 	print(progress_bar_long_str)
@@ -183,6 +197,7 @@ def test(untiprint_test_number, unitprint2_test_number,
 	pb = ims.ProgressBar(None, prog_bar_incorrect_range)
 	for i in range(prog_bar_correct_range):
 		time.sleep(delay)
+		timer.do_nothing()
 		pb()
 	print()
 	print()
@@ -191,9 +206,9 @@ def test(untiprint_test_number, unitprint2_test_number,
 	print()
 	print("high_accuracy_sleep timing testing")
 	print()
-	timer = PrecTimer()
 	for _ in range(ptimer_num_runs):
 		timer.high_accuracy_sleep(ptimer_sleep_duration)
+		timer.do_nothing()
 	print(timer.high_accuracy_sleep.summary_long())
 	print()
 	print(f"time.sleep timing testing")
@@ -203,7 +218,13 @@ def test(untiprint_test_number, unitprint2_test_number,
 	timed_sleep = ims.PTimer(time.sleep, print_rate=100, length="long")
 	for _ in range(ptimer_num_runs):
 		timed_sleep(ptimer_sleep_duration)
+		timer.do_nothing()
 	print(timed_sleep.summary_long())
+	print()
+	print()
+	print("How long does nothing take?")
+	print(timer.do_nothing.summary_long())
+	print()
 
 
 def main():
