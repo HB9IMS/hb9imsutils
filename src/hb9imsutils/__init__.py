@@ -24,8 +24,8 @@ except ImportError:
             unitprint2_block,
             VERBOSE
         )
-        print("UNITS SUBMODULE IMPORTED WITHOUT PARRENT REFERENCE")
-        print("THIS SHOULD ONLY HAPPEN WHILE DEVELOPPING; NOT IN PRODUCTION")
+        print("UNITS SUBMODULE IMPORTED WITHOUT PARRENT REFERENCE", file=sys.stderr)
+        print("THIS SHOULD ONLY HAPPEN WHILE DEVELOPPING; NOT IN PRODUCTION", file=sys.stderr)
     except ImportError:
         raise ImportError("units submodule not found; package broken")
 
